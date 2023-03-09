@@ -1,2 +1,1 @@
--- EXPLAIN 
-select * from COUNTRIES;
+select * from EMP_DETAILS_VIEW;
