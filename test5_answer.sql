@@ -1,28 +1,39 @@
 /*
-create table ORGSYS_LOAD_DOCUMENTS (
-  FILE_ID clob,
-  FILENAME clob,
-  FILE_EXT clob,
-  FILE_SIZE clob,
-  CREATOR clob,
-  DATE_MODIFY clob,
-  OBJECT_ID clob,
-  "COMMENT" clob,
-  PK_TABLE_ID  clob);
+drop table ORGSYS_LOAD_DOCUMENTS;
+drop table FIRMSYS_LOAD_DOCUMENTS;
+
+create table --if not exists 
+  ORGSYS_LOAD_DOCUMENTS (
+    FILE_ID clob
+    , FILENAME clob
+    , FILE_EXT clob
+    , FILE_SIZE clob
+    , CREATOR clob
+    , DATE_MODIFY clob
+    , OBJECT_ID clob
+    , "COMMENT" clob
+    , PK_TABLE_ID  clob
+  --, PRIMARY KEY (FILE_ID)
+  );
  
- create table FIRMSYS_LOAD_DOCUMENTS (
-  FILE_ID clob,
-  FILENAME clob,
-  FILE_EXT clob,
-  FILE_SIZE clob,
-  CREATOR clob,
-  DATE_MODIFY clob,
-  OBJECT_ID clob,
-  "COMMENT" clob,
-  PK_TABLE_ID  clob);
+ create table --if not exists  
+ FIRMSYS_LOAD_DOCUMENTS (
+    FILE_ID clob
+    , FILENAME clob
+    , FILE_EXT clob
+    , FILE_SIZE clob
+    , CREATOR clob
+    , DATE_MODIFY clob
+    , OBJECT_ID clob
+    , "COMMENT" clob
+    , PK_TABLE_ID  clob
+  --, PRIMARY KEY (FILE_ID)
+  );
 
-*/ 
 
+
+
+*/
 delete from ORGSYS_LOAD_DOCUMENTS;
 delete from FIRMSYS_LOAD_DOCUMENTS;
 
