@@ -185,22 +185,22 @@ select file_id, filename, file_ext, file_size, creator, date_modify, object_id, 
         select o.file_id from ORGSYS_LOAD_DOCUMENTS o
         join FIRMSYS_LOAD_DOCUMENTS f
         on o.file_id = f.FILE_ID
-      ) and file_level = 'org' then '0' -- row in org for update
+      ) and file_level = 'org' then '0'                       -- row for update in "org"
         
         when file_id in (
         select o.file_id from ORGSYS_LOAD_DOCUMENTS o
         join FIRMSYS_LOAD_DOCUMENTS f
         on o.file_id = f.FILE_ID
-      ) and file_level = 'firm' then '1' -- updated row in firm 
+      ) and file_level = 'firm' then '1'                      -- updated row in "firm" 
         
         when file_id in (
         select f.file_id from FIRMSYS_LOAD_DOCUMENTS f
         left join ORGSYS_LOAD_DOCUMENTS o
         on (f.FILE_ID) = (o.FILE_ID)
         where (o.FILE_ID) is NULL
-      ) and file_level = 'firm' then '2' -- add row to org
+      ) and file_level = 'firm' then '2'                      -- add row to "org"
       
-      else '-1' -- delete row
+      else '-1'                                               -- delete row from "org"
   end as action_type
 from (select file_id, filename, file_ext, file_size, creator, date_modify, object_id, "COMMENT", pk_table_id, 'org' as file_level from ORGSYS_LOAD_DOCUMENTS
 union all
