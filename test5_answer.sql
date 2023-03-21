@@ -151,7 +151,7 @@ MERGE INTO ORG.SYS_LOAD_DOCUMENTS o
 
 */
 
--- решение 2 - шаг 1 - анализ необходимости выполнения действий
+-- решение 2 - шаг 1 - анализ необходимости выполнения действий - вариант 1
 /*
 select file_id, filename, file_ext, file_size, creator, date_modify, object_id, "COMMENT", pk_table_id, 
   case 
@@ -180,5 +180,38 @@ from (select file_id, filename, file_ext, file_size, creator, date_modify, objec
 union all
 select file_id, filename, file_ext, file_size, creator, date_modify, object_id, "COMMENT", pk_table_id, 'firm' as file_level from FIRM.SYS_LOAD_DOCUMENTS)
 */
+--
+
+-- решение 2 - шаг 1 - анализ необходимости выполнения действий - вариант 2
+
+create or replace view current_union as 
+select file_id, filename, file_ext, file_size, creator, date_modify, object_id, "COMMENT", pk_table_id,         
+    case
+      when file_id in (
+        select firm from (select f.file_id as firm
+from FIRM.SYS_LOAD_DOCUMENTS f
+join ORG.SYS_LOAD_DOCUMENTS o
+on f.FILE_ID = o.FILE_ID)
+      ) then 'need_to_update'                        --need to update from 'firm'
+    else 'delete'                           --need to delete from 'org'
+    end as action_type
+from ORG.SYS_LOAD_DOCUMENTS
+
+union all
+
+select file_id, filename, file_ext, file_size, creator, date_modify, object_id, "COMMENT", pk_table_id, 
+case 
+        when file_id in (
+        select firm from (select f.file_id as firm
+from FIRM.SYS_LOAD_DOCUMENTS f
+join ORG.SYS_LOAD_DOCUMENTS o
+on f.FILE_ID = o.FILE_ID)
+      ) then 'new_update'                      -- updated row
+      else 'add'                        -- to add row
+  end as action_type  
+from FIRM.SYS_LOAD_DOCUMENTS;
+
 
 -- решение 2 - шаг 2 - выполнение указанных действий
+
+select * from current_union
