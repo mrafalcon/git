@@ -215,3 +215,21 @@ from FIRM.SYS_LOAD_DOCUMENTS;
 -- решение 2 - шаг 2 - выполнение указанных действий
 
 select * from current_union
+
+
+DECLARE
+c_id current_union.file_id%type;
+CURSOR c1
+IS 
+select file_id
+from current_union;
+
+begin 
+  open c1;
+  loop
+  fetch c1 into c_id;
+    exit when c1%notfound;
+    DBMS_OUTPUT.PUT_LINE ('Current ID: '||c_id);
+  end loop;
+  close c1;
+end;
