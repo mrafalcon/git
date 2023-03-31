@@ -247,5 +247,54 @@ end;
 select * from hr.tbl_c;
 
 SELECT REGEXP_SUBSTR(str, '[^,]', 1, LEVEL)
-  FROM (SELECT '9,8,7,6,5' str FROM DUAL)
+  FROM (SELECT '11,9,8,7,6,5' str FROM DUAL)
   CONNECT BY REGEXP_SUBSTR(str, '[^,]', 1, LEVEL) IS NOT NULL;
+
+
+
+CURSOR get_crd(c_scntrid NUMBER) IS
+      SELECT contrc_id,
+             scntr_id,
+             scntst_id,
+             scntst_name,
+             empl_id,
+             empl_name,
+             contrc_date,
+             contrc_reply,
+             is_buildstatus,
+             LEVEL AS c_level
+        FROM (SELECT c.contrc_id,
+                     c.contrc_parent_id,
+                     s.scntr_id,
+                     s.scntst_id,
+                     s.scntst_name,
+                     em.empl_id,
+                     em.empl_lastname || ' ' || em.empl_firstname || ' ' ||
+                     em.empl_middlename AS empl_name,
+                     c.contrc_date,
+                     c.contrc_reply,
+                     decode(c.contrc_parent_id,
+                            -1,
+                            1,
+                            (SELECT ss.scntst_issuccess
+                               FROM contract_out_consent cc, sconsentstatus ss
+                              WHERE cc.contrc_id = c.contrc_parent_id
+                                AND cc.contr_stage = p_stage
+                                AND cc.scntst_id = ss.scntst_id
+                                AND cc.is_type_budget = 0
+                                AND ss.status = 1)) AS is_buildstatus
+                FROM contract_out_consent c,
+                     sconsentstatus       s,
+                     ais_res.semployee    em
+               WHERE c.contr_id = p_plnid
+                 AND c.contr_stage = p_stage
+                 AND c.scntst_id = s.scntst_id
+                 AND c.empl_id = em.empl_id
+                 AND c.is_type_budget = 0
+                 AND c.status = 1)
+      CONNECT BY PRIOR contrc_id = contrc_parent_id
+       START WITH scntr_id = c_scntrid
+              AND contrc_parent_id = -1
+       ORDER SIBLINGS BY contrc_islocal DESC;
+    TYPE crdtype IS TABLE OF get_crd%ROWTYPE INDEX BY BINARY_INTEGER;
+    crd_arr crdtype;
