@@ -1,6 +1,6 @@
 --создание схем org и firm
 /*
---connect SYSTEM/oracle;
+--conn.SYSTEM/oracle;
 
 create user ORG identified by org;
 
@@ -216,20 +216,32 @@ from FIRM.SYS_LOAD_DOCUMENTS;
 
 select * from current_union
 
+drop table hr.tbl_b;
+drop table hr.tbl_c;
+create table hr.tbl_c
+(id int, name varchar2(255), d TIMESTAMP default sysdate);
+insert into hr.tbl_c (id, name) values (1, 'A');
+
+
+select * from hr.tbl_c;
 
 DECLARE
-c_id current_union.file_id%type;
+c_id FIRM.SYS_LOAD_DOCUMENTS.file_id%type;
 CURSOR c1
 IS 
 select file_id
-from current_union;
-
+from FIRM.SYS_LOAD_DOCUMENTS;
 begin 
   open c1;
   loop
   fetch c1 into c_id;
     exit when c1%notfound;
+    insert into hr.tbl_c (id, name) values (c_id, c_id);
     DBMS_OUTPUT.PUT_LINE ('Current ID: '||c_id);
+--    commit;
   end loop;
   close c1;
+  commit;
 end;
+
+select * from hr.tbl_c;
