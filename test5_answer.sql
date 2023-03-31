@@ -245,3 +245,7 @@ begin
 end;
 
 select * from hr.tbl_c;
+
+SELECT REGEXP_SUBSTR(str, '[^,]', 1, LEVEL)
+  FROM (SELECT '9,8,7,6,5' str FROM DUAL)
+  CONNECT BY REGEXP_SUBSTR(str, '[^,]', 1, LEVEL) IS NOT NULL;
